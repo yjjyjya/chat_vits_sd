@@ -64,26 +64,46 @@
 		</div>
 	</div>
 
-    <div class="right-container"></div>
-	<script>
+    <div class="right-container" id="rcontainer">
+		<div class="udbutton-container" id="uc">
+		</div>
+	</div>
+
+	<script type="text/JavaScript">
 		// JavaScript 动态创建 <audio> 标签并添加源
 		// 创建 audio 标签
 		const audio = document.createElement("audio");
+		audio.setAttribute("controls", "");
 		audio.setAttribute("id", "myAudio");
-		audio.setAttribute("autoplay", "");
 
 		// 创建 source 标签，指定文件路径
 		const source = document.createElement("source");
-		source.setAttribute("src", "../audio.wav");
+		source.setAttribute("src", "");
 		source.setAttribute("type", "audio/wav");
 
 		// 将 source 标签添加到 audio 标签中
 		audio.appendChild(source);
+		const rcontainer = document.getElementById("rcontainer");
+		rcontainer.appendChild(audio);
 
-		// 将 audio 标签添加到文档中
-		document.body.appendChild(audio);
+		const updatebutton = document.createElement("button");
+		updatebutton.textContent = "更新音频";
+		updatebutton.setAttribute("onclick", "updateaudio()");
+		document.getElementById("uc").appendChild(updatebutton);
 	</script>
-
+	<script>
+		function updateaudio(){
+			const timestamp = Date.now(); // 返回当前时间距离 Unix Epoch 时间（1970 年 1 月 1 日 00:00:00 UTC）的毫秒数
+			console.log(timestamp); // 例如：1626705471125
+			const audio = document.getElementById("myAudio");
+			const sources = audio.querySelectorAll("source");
+			source.src = "./static/audio.wav?t=" + timestamp;
+			audio.volume = 0.3;
+			audio.load();
+			audio.play();
+		}
+	</script>
+	
 	<script>
 		var changeBtn = document.getElementById("change-btn");
 		changeBtn.addEventListener("click", function() {

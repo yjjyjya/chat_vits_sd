@@ -41,8 +41,6 @@ def get_text(text, hps):
     return text_norm
 
 
-
-
 app = Flask(__name__)
 socketio = SocketIO(app,cors_allowed_origins='*')
 
@@ -64,7 +62,7 @@ def get_audio(text):
     _ = net_g.eval().to(torch.device('cpu'))
 
     # 生成音频文件
-    wav_file = 'audio.wav'
+    wav_file = './static/audio.wav'
     stn_tst = get_text(text, hps)
     with torch.no_grad():
         x_tst = stn_tst.to(torch.device('cpu')).unsqueeze(0)
@@ -79,25 +77,38 @@ def chat():
   # 解析请求数据
   request_data = request.get_json()
   user_message = request_data['messages'][0]['content']
-  # 调用 OpenAI API 进行聊天
-  response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": user_message},
-    ],
-    temperature=0.7,
-  )
+#   # 调用 OpenAI API 进行聊天
+#   response = openai.ChatCompletion.create(
+#     model="gpt-3.5-turbo",
+#     messages=[
+#       {"role": "system", "content": "You are a helpful assistant."},
+#       {"role": "user", "content": user_message},
+#     ],
+#     temperature=0.7,
+#   )
   
   # 生成语音
-  audio_file = get_audio(response.choices[0].text)
+#   audio_file = get_audio(response.choices[0].text)
+  audio_file = get_audio(user_message)
+
 
   # 发送聊天结果和语音给客户端
   # socketio.emit('chat_response', {'text': response.choices[0].text, 'audio_file': audio_file})
-  socketio.emit('chat_response', response.choices[0].message['content'] )
+#   socketio.emit('chat_response', response.choices[0].message['content'] )
 
   # 返回聊天结果
-  # return jsonify({'choices': response.choices})
+#   return jsonify({'choices': response.choices})
+
+@app.route('/play-audio')
+def play_audio():
+    """
+    返回已经生成的音频文件
+    """
+    request_data = request.get_json()
+    user_message = request_data['messages'][0]['content']
+    audio_file = get_audio(user_message)
+    return audio_file, 200, {'Content-Type': 'audio/wav'}
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True,port=5001)
