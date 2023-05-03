@@ -1,71 +1,77 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<link rel="stylesheet" type="text/css" href="./static/button.css">
 	<link rel="stylesheet" type="text/css" href="./static/middle-container.css">
 
-    <title>虚拟人物形象构建</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: row;
-            background-color: black;
-        }
-
-        .left-container {
-            width: calc(30% );
-            height: 100vh;
-            margin: 0 5px;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .right-container {
-            width: calc(30% );
-            height: 100vh;
-            margin: 0 5px;
-            background-color: black;
-        }
-    </style>
+	<title>虚拟人物形象构建</title>
+	<style>
+		/* 容器的样式设置 */
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			display: flex;
+			flex-direction: row;
+			background-color: black;
+		}
+		.left-container {
+			width: calc(30%);
+			height: 100vh;
+			margin: 0 5px;
+			background-color: black;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.right-container {
+			width: calc(30%);
+			height: 100vh;
+			margin: 0 5px;
+			background-color: black;
+		}
+	</style>
 </head>
+
 <body>
-    <div class="left-container">
+	<div class="left-container">
+		<!-- 左容器，包括两个按钮 -->
 		<div class="button-container">
-        	<button id="change-btn">更换人物</button>
+			<button id="change-btn">更换人物</button>
 		</div>
 		<div class="button-container-2">
 			<button id="diffusion-btn">Stable Diffusion</button>
 		</div>
-    </div>
+	</div>
 
 	<div class="middle-container">
+		<!-- 中间容器，包括背景图像、输入栏、聊天信息框 -->
 		<div class="image-container">
-		  <img src="your-image.jpg" draggable="true" />
+			<img src="./static/a.png" draggable="true" />
 		</div>
 
 		<div class="text-container">
-		  <form id="chat-form">
-			<input type="text" id="chat-input" placeholder="请输入聊天内容">
-			<button type="submit">发送</button>
-		  </form>
+			<form id="chat-form">
+				<input type="text" id="chat-input" placeholder="请输入聊天内容" maxlength="200">
+				<!-- 定义提交按钮。提交按钮会把表单数据发送到服务器。 -->
+				<button type="submit">发送</button>
+			</form>
 		</div>
 
 		<div class="chatbox-container">
-			<div id="chat-box" class="chatbox">
+			<div id="chat-box" class="chatbox" style="overflow-x: auto;overflow-y: auto;">
 				<div class="chat-message user">
-					<div class="chat-content">...</div>
-				</div>  
+					<div class="chat-content"></div>
+				</div>
 			</div>
 		</div>
 	</div>
 
-    <div class="right-container" id="rcontainer">
+	<div class="right-container" id="rcontainer">
+		<!-- 右容器，包括音频、按钮 -->
 		<div class="udbutton-container" id="uc">
+			<!-- 更新音频的按钮容器 -->
 		</div>
 	</div>
 
@@ -83,43 +89,49 @@
 
 		// 将 source 标签添加到 audio 标签中
 		audio.appendChild(source);
+
+		// 获取右容器对象，将 audio 添加进去
 		const rcontainer = document.getElementById("rcontainer");
 		rcontainer.appendChild(audio);
 
+		// 创建用于更新的按钮
 		const updatebutton = document.createElement("button");
 		updatebutton.textContent = "更新音频";
-		updatebutton.setAttribute("onclick", "updateaudio()");
-		document.getElementById("uc").appendChild(updatebutton);
-	</script>
-	<script>
-		function updateaudio(){
+		// 设置点击事件
+		updatebutton.addEventListener("click", function(){
 			const timestamp = Date.now(); // 返回当前时间距离 Unix Epoch 时间（1970 年 1 月 1 日 00:00:00 UTC）的毫秒数
 			console.log(timestamp); // 例如：1626705471125
 			const audio = document.getElementById("myAudio");
 			const sources = audio.querySelectorAll("source");
+			// 更新链接
 			source.src = "./static/audio.wav?t=" + timestamp;
-			audio.volume = 0.3;
+			audio.volume = 0.4;
 			audio.load();
 			audio.play();
-		}
+		})
+		// 添加到id="uc"的容器中（方便更改样式）
+		document.getElementById("uc").appendChild(updatebutton);
 	</script>
-	
+
 	<script>
+		// 更换人物
 		var changeBtn = document.getElementById("change-btn");
-		changeBtn.addEventListener("click", function() {
+		changeBtn.addEventListener("click", function () {
 			var fileInput = document.createElement("input");
 			fileInput.type = "file";
 			fileInput.accept = "image/*";
-			fileInput.onchange = function() {
+			fileInput.onchange = function () {
 				var file = this.files[0];
 				var reader = new FileReader();
-				reader.onload = function(event) {
+				reader.onload = function (event) {
 					var imageUrl = event.target.result;
+					// 获取背景图像的容器，再修改图片的链接
 					var imageContainer = document.querySelector(".image-container");
 					imageContainer.innerHTML = "";
 					var img = new Image();
 					img.src = imageUrl;
-					img.onload = function() {
+					// 将图片添加到容器中
+					img.onload = function () {
 						imageContainer.appendChild(img);
 					};
 				};
@@ -128,132 +140,107 @@
 			fileInput.click();
 		});
 	</script>
-	  
+
 	<script src="//cdn.socket.io/4.1.2/socket.io.min.js"></script>
 	<script>
 		var socket = io.connect('http://localhost:5001');
-	  
+		const chatBox = document.querySelector('#chat-box');
+
 		// 处理聊天表单提交事件
-		document.querySelector('#chat-form').addEventListener('submit', function(event) {
-		  // 阻止表单默认的提交行为
-		  event.preventDefault();
-		  // 获取文本框中的内容
-		  const chatInput = document.querySelector('#chat-input');
-		  const chatText = chatInput.value.trim();
-		  if (!chatText) {
-			return;
-		  }
-		  // 发送 AJAX 请求
-		  fetch('/chat', {
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-			  messages: [
-				{"role": "user", "content": chatText}
-			  ],
-			  model: 'gpt-3.5-turbo',
-			  temperature: 0.7
-			}),
-			timeout: 5000 // 等待时间设置为 5 秒钟
-		  })
-		  .then(function(response) {
-			return response.json();
-		  })
-		  .then(function(data) {
-			// 过滤掉系统的回复
-			const chatResponse = data.choices.filter(function(choice) {
-			  return choice.message.role === 'assistant';
-			})[0].message.content;
-			// 显示聊天记录
-			const chatBox = document.querySelector('#chat-box');
-			const chatMessage = document.createElement('div');
-			chatMessage.classList.add('chat-message');
-			const chatResponseContainer = document.createElement('div');
-			chatResponseContainer.classList.add('chat-response');
-			chatResponseContainer.textContent = chatResponse;
-			chatMessage.appendChild(chatResponseContainer);
-			chatBox.appendChild(chatMessage);
+		document.querySelector('#chat-form').addEventListener('submit', function (event) {
+			// 阻止表单默认的提交行为
+			event.preventDefault();
+			// 获取文本框中的内容
+			const chatInput = document.querySelector('#chat-input');
+			// 去除输入内容的头尾空格
+			const chatText = chatInput.value.trim();
+			// 如果输入为空就返回
+			if (!chatText) {
+				return;
+			}
+			// 将用户的聊天内容添加到聊天记录中
+			displayMessage('user', chatText);
+			// 发送 AJAX 请求
+			fetch('/chat', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					messages: [
+						{ "role": "user", "content": chatText }
+					],
+					model: 'gpt-3.5-turbo',
+					temperature: 0.7
+				}),
+				timeout: 5000 // 等待时间设置为 5 秒钟
+			})
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (data) {
+				// 过滤掉系统的回复
+				// const chatResponse = data.choices.filter(function (choice) {
+				// 	return choice.message.role === 'assistant';
+				// })[0].message.content;
+				const chatResponse = data.filter(function () {
+					return True;
+				});
+				// 发送数据给服务器端
+				socket.emit('chat_response', chatResponse);
+			});
 			// 清空文本框
 			chatInput.value = '';
-			// 发送数据给服务器端
-			socket.emit('chat_response', chatResponse);
-		  });
 		});
-	  
-		// 监听服务器端发送的数据
-		socket.on('chat_response', function(data) {
-		  // 显示聊天记录
-		  const chatBox = document.querySelector('#chat-box');
-		  const chatMessage = document.createElement('div');
-		  chatMessage.classList.add('chat-message');
-		  const chatResponseContainer = document.createElement('div');
-		  chatResponseContainer.classList.add('chat-response');
-		  chatResponseContainer.textContent = data;
-		  chatMessage.appendChild(chatResponseContainer);
-		  chatBox.appendChild(chatMessage);
-		});
-	</script>	 
-
-	<script>
-		// 获取聊天室元素
-		const chatBox = document.querySelector('#chat-box');
-	  
-		// 处理聊天表单提交事件
-		document.querySelector('#chat-form').addEventListener('submit', function(event) {
-		  // 阻止表单默认的提交行为
-		  event.preventDefault();
-		  // 获取文本框中的内容
-		  const chatInput = document.querySelector('#chat-input');
-		  const chatText = chatInput.value.trim();
-		  if (!chatText) {
-			return;
-		  }
-		  // 将用户的聊天内容添加到聊天记录中
-		  appendMessage('user', chatText);
-		  // 发送数据给服务器端
-		  socket.emit('chat_message', chatText);
-		  // 清空文本框
-		  chatInput.value = '';
-		});
-	  
-		// 监听服务器端发送的聊天消息
-		socket.on('chat_message', function(data) {
-		  // 将机器人的聊天内容添加到聊天记录中
-		  appendMessage('assistant', data);
-		});
-	  
 		// 定义一个函数，将聊天内容添加到聊天记录中
-		function appendMessage(sender, content) {
+		function displayMessage(sender, content) {
 			const chatMessage = document.createElement('div');
 			const chatContent = document.createElement('div');
+			// 添加类别
 			chatMessage.classList.add('chat-message');
 			chatContent.classList.add('chat-content');
 			chatContent.textContent = content;
 			chatMessage.appendChild(chatContent);
 			if (sender === 'user') {
 				chatMessage.classList.add('user');
+				const u_or_s = document.createElement('div');
+				u_or_s.classList.add('distinguish')
+				u_or_s.textContent = 'User: '
+				chatBox.appendChild(u_or_s);
 				chatBox.appendChild(chatMessage);
 			} else if (sender === 'server') {
-				chatMessage.classList.add('assistant');
+				chatMessage.classList.add('server');
 				const chatMessageContainer = document.createElement('div');
 				chatMessageContainer.classList.add('chat-message-container');
 				const chatMessageReceived = document.createElement('div');
 				chatMessageReceived.classList.add('chat-message-received');
+				const u_or_s = document.createElement('div');
+				u_or_s.classList.add('distinguish')
+				u_or_s.textContent = 'Response: '
+				chatBox.appendChild(u_or_s);
 				chatMessageReceived.appendChild(chatMessage);
 				chatMessageContainer.appendChild(chatMessageReceived);
 				chatBox.appendChild(chatMessageContainer);
 			}
 		}
 
+		// 监听服务器端发送的数据
+		socket.on('chat_response', function (data) {
+			displayMessage('server', data);
+		});
 	</script>
-	  
+
 	<script>
 		var diffusionBtn = document.getElementById("diffusion-btn");
-		diffusionBtn.addEventListener("click", function() {
-		  window.open("http://127.0.0.1:7860", "_blank");
+		diffusionBtn.addEventListener("click", function () {
+			window.open("http://127.0.0.1:7860", "_blank");
 		});
 	</script>
 </body>
+
 </html>
+
+<!-- https://zhuanlan.zhihu.com/p/372787041 -->
+<!-- [JA]この世界のすべての不幸は、当事者の能力不足に起因している。[JA] -->
+<!-- [JA]普段とは逆方向の電車に乗り、見たことのない風景を見に行くために。[JA] -->
+<!-- [JA]おとといウサギを見ました。昨日は鹿で、今日はあなたです。[JA] -->
