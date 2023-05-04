@@ -61,9 +61,6 @@
 
 		<div class="chatbox-container">
 			<div id="chat-box" class="chatbox" style="overflow-x: auto;overflow-y: auto;">
-				<div class="chat-message user">
-					<div class="chat-content"></div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -194,33 +191,37 @@
 		});
 		// 定义一个函数，将聊天内容添加到聊天记录中
 		function displayMessage(sender, content) {
-			const chatMessage = document.createElement('div');
-			const chatContent = document.createElement('div');
-			// 添加类别
-			chatMessage.classList.add('chat-message');
-			chatContent.classList.add('chat-content');
-			chatContent.textContent = content;
-			chatMessage.appendChild(chatContent);
-			if (sender === 'user') {
-				chatMessage.classList.add('user');
-				const u_or_s = document.createElement('div');
-				u_or_s.classList.add('distinguish')
-				u_or_s.textContent = 'User: '
-				chatBox.appendChild(u_or_s);
-				chatBox.appendChild(chatMessage);
-			} else if (sender === 'server') {
-				chatMessage.classList.add('server');
-				const chatMessageContainer = document.createElement('div');
-				chatMessageContainer.classList.add('chat-message-container');
-				const chatMessageReceived = document.createElement('div');
-				chatMessageReceived.classList.add('chat-message-received');
-				const u_or_s = document.createElement('div');
-				u_or_s.classList.add('distinguish')
-				u_or_s.textContent = 'Response: '
-				chatBox.appendChild(u_or_s);
-				chatMessageReceived.appendChild(chatMessage);
-				chatMessageContainer.appendChild(chatMessageReceived);
-				chatBox.appendChild(chatMessageContainer);
+			const one_message = document.createElement('div')
+			one_message.classList.add('one-message')
+
+			const speaker_pic = document.createElement('img');
+			speaker_pic.src = ''
+
+			const chat_content = document.createElement('div');
+			chat_content.classList.add('chat-content');
+			const chat_message = document.createElement('span');
+			chat_message.classList.add('message');
+			chat_message.textContent = content;
+
+			one_message.appendChild(chat_content)
+			chatBox.appendChild(one_message)
+
+			if (sender == 'user') {
+				one_message.classList.add('user');
+				speaker_pic.src = './static/user.png'
+				const right_triangle = document.createElement('div');
+				right_triangle.classList.add('right-triangle');
+				chat_content.appendChild(speaker_pic);
+				chat_content.appendChild(right_triangle);
+				chat_content.appendChild(chat_message);
+			} else if (sender == 'server') {
+				one_message.classList.add('server');
+				speaker_pic.src = './static/server.png'
+				const left_triangle = document.createElement('div');
+				left_triangle.classList.add('left-triangle');
+				chat_content.appendChild(speaker_pic);
+				chat_content.appendChild(left_triangle);
+				chat_content.appendChild(chat_message);
 			}
 		}
 
@@ -244,3 +245,14 @@
 <!-- [JA]この世界のすべての不幸は、当事者の能力不足に起因している。[JA] -->
 <!-- [JA]普段とは逆方向の電車に乗り、見たことのない風景を見に行くために。[JA] -->
 <!-- [JA]おとといウサギを見ました。昨日は鹿で、今日はあなたです。[JA] -->
+
+
+<!-- <div class="chatbox">
+	<div class="one-message">
+		<div class="chat-content">
+			<img src="">
+			<div class="right-triangle"></div>
+			<span class="message">...</span>
+		</div>
+	</div>
+</div> -->
