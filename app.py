@@ -83,7 +83,7 @@ def chat():
     # )
 
     # # 生成语音
-    # audio_file = get_audio('[ZH]' + response.choices[0].text + '[ZH]')
+    # audio_file = get_audio('[ZH]' + response.choices[0].message['content'] + '[ZH]')
     audio_file = get_audio(user_message)
 
     # # 发送聊天结果和语音给客户端
@@ -95,15 +95,15 @@ def chat():
     # return jsonify({'choices': response.choices})
     return None
 
-@app.route('/play-audio/')
-def play_audio():
-    """
-    返回已经生成的音频文件
-    """
-    request_data = request.get_json()
-    user_message = request_data['messages'][0]['content']
-    audio_file = get_audio(user_message)
-    return audio_file, 200, {'Content-Type': 'audio/wav'}
+# @app.route('/play-audio/')
+# def play_audio():
+#     """
+#     返回已经生成的音频文件
+#     """
+#     request_data = request.get_json()
+#     user_message = request_data['messages'][0]['content']
+#     audio_file = get_audio(user_message)
+#     return audio_file, 200, {'Content-Type': 'audio/wav'}
 
 
 if __name__ == '__main__':

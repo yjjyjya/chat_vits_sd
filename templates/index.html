@@ -185,6 +185,16 @@
 				});
 				// 发送数据给服务器端
 				socket.emit('chat_response', chatResponse);
+				
+				// 自动播放语音
+				const timestamp = Date.now();
+				console.log(timestamp);
+				const audio = document.getElementById("myAudio");
+				const sources = audio.querySelectorAll("source");
+				source.src = "./static/audio.wav?t=" + timestamp;
+				audio.volume = 0.4;
+				audio.load();
+				audio.play();
 			});
 			// 清空文本框
 			chatInput.value = '';
